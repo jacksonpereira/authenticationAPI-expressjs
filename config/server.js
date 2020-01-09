@@ -3,7 +3,7 @@ const load = require('express-load');
 
 require("dotenv-safe").config();
 
-module.exports = ()=>{
+module.exports = () => {
     var app = express();
 
     app.set('port', process.env.PORT);
@@ -16,7 +16,9 @@ module.exports = ()=>{
     );
     app.use(require('method-override')());
 
-    load('domains', { cwd: 'src' })
+    load('domains', {
+            cwd: 'src'
+        })
         .then('services')
         .then('business')
         .then('controllers')
