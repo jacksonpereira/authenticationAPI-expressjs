@@ -5,6 +5,7 @@ const {
 
 const app = require('./config/server')();
 const connection = new Sequelize(require('./config/database'));
+const logger = require('./logs/index')();
 
 // Import de controlers
 // app.use(require('./src/controllers/user')(app));
@@ -16,7 +17,7 @@ connection
     console.log('Connection has been established successfully.');
   })
   .catch(err => {
-    console.error('Unable to connect to the database:', err);
+    logger.error(err);
     return
   });
 

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const serviceDatabase = require("../services/database")();
 const Sequelize = require("sequelize");
-const logger = require('logger').createLogger('access.log');
+const logger = require('../../logs/index')();
 
 module.exports = () => {
   return {
@@ -20,9 +20,10 @@ module.exports = () => {
         })
         .then((result) => {
           if (!result) {
-            console.log("Inválido!");
-            logger.warn("Inválido!");
-            return res.status(403).send("Login inválido!");
+            logger.info(new Date(), req.method, req.url, req.hostname, 'Login inválido!');
+            return res.status(403).json({
+              message: "Login inválido!"
+            });
           }
           var id = result.id;
           var token = jwt.sign({
@@ -33,15 +34,13 @@ module.exports = () => {
               expiresIn: 1800
             } // expires in 30mins
           );
-          console.log("Válido!");
           return res.status(200).send({
             auth: true,
             token: token
           });
         })
         .catch((err) => {
-          console.log("Erro ao logar!");
-          logger.error("Inválido!");
+          logger.error(new Date(), req.method, req.url, req.hostname, 'Erro ao logar!');
           return res.status(500).send({
             message: err
           });

@@ -7,6 +7,7 @@ module.exports = () => {
       return new Promise((resolve, reject) => {
         User.findOne(query)
           .then(result => {
+            console.log(result);
             resolve(result);
           })
           .catch(err => {
