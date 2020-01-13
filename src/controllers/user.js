@@ -1,6 +1,4 @@
-module.exports = (app) =>{
-    var userBusiness = app.business.user;
-
+module.exports = (app) => {
     return {
         login: app.post("/login", app.business.user.login),
 
