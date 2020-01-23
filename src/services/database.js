@@ -7,7 +7,6 @@ module.exports = () => {
       return new Promise((resolve, reject) => {
         User.findOne(query)
           .then(result => {
-            console.log(result);
             resolve(result);
           })
           .catch(err => {
@@ -15,11 +14,11 @@ module.exports = () => {
           });
       });
     },
-    create: user => {
-      return new Promise((resolve, reject) => {
-        resolve(User.create(user));
-        reject({});
-      });
-    }
+    // create: user => {
+    //   return new Promise((resolve, reject) => {
+    //     resolve(User.create(user));
+    //     reject({});
+    //   });
+    // }
   };
 };

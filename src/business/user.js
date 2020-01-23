@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
 const serviceDatabase = require("../services/database")();
 const Sequelize = require("sequelize");
-const logger = require('../../logs/index')();
+const logger = require("../../logging/index")();
 
 module.exports = () => {
   return {
     login: (req, res) => {
-      console.log(req.body);
-      serviceDatabase.find({
+      serviceDatabase
+        .find({
           where: {
             [Sequelize.Op.and]: [{
                 email: req.body.email
@@ -18,13 +18,13 @@ module.exports = () => {
             ]
           }
         })
-        .then((result) => {
+        .then(result => {
+          // Se as credenciais não forem válidas
           if (!result) {
-            logger.info(new Date(), req.method, req.url, req.hostname, 'Login inválido!');
-            return res.status(403).json({
-              message: "Login inválido!"
-            });
+            logger.info(req.method, req.hostname, req.url, "Login inválido!");
+            return res.status(403).json(result);
           }
+
           var id = result.id;
           var token = jwt.sign({
               id
@@ -39,12 +39,12 @@ module.exports = () => {
             token: token
           });
         })
-        .catch((err) => {
-          logger.error(new Date(), req.method, req.url, req.hostname, 'Erro ao logar!');
+        .catch(err => {
+          logger.error(req.method, req.hostname, req.url, "Erro ao logar!");
           return res.status(500).send({
             message: err
           });
-        })
+        });
     },
 
     // Verificar se realmente é necessário
@@ -56,18 +56,24 @@ module.exports = () => {
     },
 
     verify: (req, res, next) => {
-      var token = req.headers['authorization'];
-      if (!token) return res.status(401).redirect("https://igti.instructure.com/login/canvas");
-      jwt.verify(token, process.env.SECRETJWT, function (err, decoded) {
+      var token = req.headers["authorization"];
+      if (!token) {
+        console.log("No token: 401");
+        return res.status(401);
+      }
+      jwt.verify(token, process.env.SECRETJWT, (err, decoded) => {
         if (err) {
-          return res.status(403).redirect("https://www.origamid.com/minha-conta/");
+          console.log("Token error: 403");
+          return res.status(403).json({
+            message: err
+          });
+        } else {
+          console.log("OK: 200");
+          // se tudo estiver ok, salva no request para uso posterior
+          req.userId = decoded.id;
+          return res.status(200);
         }
-        // se tudo estiver ok, salva no request para uso posterior
-        req.userId = decoded.id;
-        return res.status(200).json({
-          decoded: decoded
-        });
       });
     }
-  }
-}
+  };
+};

@@ -15,40 +15,45 @@ module.exports = () => {
         ),
         transports: [
             new transports.File({
-                filename: 'log.log'
+                filename: 'authenticationAPI.log'
             })
         ]
     });
 
     return {
-        error: (timestamp, method, url, hostname, message) => {
-            // logger.error(`Error ${timestamp} ${method} ${url} ${hostname} ${message}`);
+        error: (method, hostname, url, message) => {
+            // logger.error(`Error ${timestamp} ${service} ${method} ${hostname} ${url} ${message}`);
             logger.error({
-                timestamp: timestamp,
+                timestamp: new Date(),
                 level: 'Error',
+                service: logger.defaultMeta.service,
                 method: method,
+                originHostname: hostname,
                 url: url,
-                hostname: hostname,
                 message: message
             });
         },
-        info: (timestamp, method, url, hostname, message) => {
-            logger.info(timestamp(), {
-                timestamp: timestamp,
+        // logger.info(`Error ${timestamp} ${service} ${method} ${hostname} ${url} ${message}`);
+        info: (method, hostname, url, message) => {
+            logger.info({
+                timestamp: new Date(),
                 level: 'Info',
+                service: logger.defaultMeta.service,
                 method: method,
+                originHostname: hostname,
                 url: url,
-                hostname: hostname,
                 message: message
             });
         },
-        warning: (timestamp, method, url, hostname, message) => {
-            logger.warning(timestamp(), {
-                timestamp: timestamp,
+        // logger.warning(`Error ${timestamp} ${service} ${method} ${hostname} ${url} ${message}`);
+        warning: (method, hostname, url, message) => {
+            logger.warning({
+                timestamp: new Date(),
                 level: 'Warning',
+                service: logger.defaultMeta.service,
                 method: method,
+                originHostname: hostname,
                 url: url,
-                hostname: hostname,
                 message: message
             });
         }

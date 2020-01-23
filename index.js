@@ -5,7 +5,7 @@ const {
 
 const app = require('./config/server')();
 const connection = new Sequelize(require('./config/database'));
-const logger = require('./logs/index')();
+const logger = require('./logging/index')();
 
 // Import de controlers
 // app.use(require('./src/controllers/user')(app));
@@ -14,14 +14,11 @@ const logger = require('./logs/index')();
 connection
   .authenticate()
   .then(() => {
-    console.log('Connection has been established successfully.');
+    console.log('Database connection has been established successfully.');
+    http.createServer(app).listen(app.get('port'), () => {
+      console.log(`API authentication listen on ${process.env.PORT} port`);
+    });
   })
   .catch(err => {
-    logger.error(err);
-    return
+    console.log('Database connection error.');
   });
-
-
-http.createServer(app).listen(app.get('port'), () => {
-  console.log(`API authentication listen on ${process.env.PORT} port`);
-});
