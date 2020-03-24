@@ -9,7 +9,8 @@ module.exports = () => {
       serviceDatabase
         .find({
           where: {
-            [Sequelize.Op.and]: [{
+            [Sequelize.Op.and]: [
+              {
                 email: req.body.email
               },
               {
@@ -26,10 +27,12 @@ module.exports = () => {
           }
 
           var id = result.id;
-          var token = jwt.sign({
+          var token = jwt.sign(
+            {
               id
             },
-            process.env.SECRETJWT, {
+            process.env.SECRETJWT,
+            {
               // process.env.EXPIRESIN
               expiresIn: 1800
             } // expires in 30mins
@@ -61,19 +64,20 @@ module.exports = () => {
         console.log("No token: 401");
         return res.status(401);
       }
-      jwt.verify(token, process.env.SECRETJWT, (err, decoded) => {
-        if (err) {
-          console.log("Token error: 403");
-          return res.status(403).json({
-            message: err
-          });
-        } else {
-          console.log("OK: 200");
-          // se tudo estiver ok, salva no request para uso posterior
-          req.userId = decoded.id;
-          return res.status(200);
-        }
-      });
+
+      try {
+        var decoded = jwt.verify(token, process.env.SECRETJWT);
+        console.log("OK: 200");
+        // se tudo estiver ok, salva no request para uso posterior
+        req.userId = decoded.id;
+        return res.status(200).json(decoded);
+        // return next();
+      } catch (err) {
+        console.log("Token error: 403");
+        req.userId = 666;
+        return res.status(300).json(err);
+        // return next();
+      }
     }
   };
 };
