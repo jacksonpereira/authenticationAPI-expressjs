@@ -1,2 +1,2 @@
 # authenticationAPI-expressjs
-[Estudos]API de autenticação feita em ExpressJS
+API de autenticação feita em ExpressJS
